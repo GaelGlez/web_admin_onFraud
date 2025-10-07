@@ -1,18 +1,12 @@
 import axios from "axios";
-import { UserCreateDTO } from "../types/UserCreateDTO";
+import { Users } from "../types/Users";
 import { LoginDTO } from "../types/LoginDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Crear usuario
-export async function createUser(user: UserCreateDTO): Promise<any> {
-    const response = await axios.post(`${BASE_URL}/auth/register`, user);
-    return response.data;
-}
-
 // Obtener usuarios
-export async function getUsers(): Promise<UserCreateDTO[]> {
-    const response = await axios.get<UserCreateDTO[]>(`${BASE_URL}/admin/users`);
+export async function getUsers(): Promise<Users[]> {
+    const response = await axios.get<Users[]>(`${BASE_URL}/admin/users`);
     return response.data;
 }
 
