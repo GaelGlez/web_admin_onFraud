@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Users } from "../types/Users";
+import { Users } from "../types/UsersDTO";
 import { LoginDTO } from "../types/LoginDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -10,7 +10,7 @@ export async function getUsers(): Promise<Users[]> {
     return response.data;
 }
 
-// ✅ Login de administrador (sin usar AxiosError)
+// Login de administrador
 export async function loginAdmin(loginDto: LoginDTO): Promise<{ access_token: string; refresh_token: string }> {
     try {
         const response = await axios.post<{ access_token: string; refresh_token: string }>(
