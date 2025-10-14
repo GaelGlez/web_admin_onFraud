@@ -4,7 +4,7 @@ import { Reports } from "../types/ReportsDTO";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getReports(): Promise<Reports[]> {
-    const response = await axios.get<Reports[]>(`${BASE_URL}/admin/reports`);
+    const response = await axios.get<Reports[]>(`${BASE_URL}/admin/reports?status_id=1`);
     return response.data;
 }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { getUsers } from "../../network/UserApi";
 import { Users } from "../../types/UsersDTO";
@@ -19,6 +21,8 @@ export default function dashboard() {
     const [reportsLoading, setReportsLoading] = useState(false);
     const [reportsError, setReportsError] = useState<string | null>(null);
 
+    const { logout } = useAuth();
+    const router = useRouter();
 
     // Función para traer usuarios
     async function fetchUsers() {
@@ -143,6 +147,16 @@ export default function dashboard() {
             </tbody>
             </table>
         )}
+            <div>
+                <button
+                    onClick={() => {
+                    logout();
+                    router.push("/login");
+                    }}
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     );
 }
