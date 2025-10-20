@@ -2,7 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import Sidebar from "./components/sidebar";
+import Sidebar from "./components/Sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
