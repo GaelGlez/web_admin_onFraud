@@ -37,6 +37,15 @@ export default function Sidebar({ currentPath }: { currentPath?: string | null }
         >
           Reportes cerrados
         </Link>
+
+        <Link
+          href="/dashboard/perfil"
+          className={`${
+            isActive(currentPath ?? null, "/dashboard/perfil") ? "active" : ""
+          }`}
+        >
+          Perfil
+        </Link>
       </nav>
     </aside>
   );
