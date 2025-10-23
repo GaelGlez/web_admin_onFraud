@@ -1,96 +1,85 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import { getUsers } from "@/network/UserApi";
-import { getReports } from "@/network/ReportApi";
-import { Users } from "@/types/UsersDTO";
-import { Reports } from "@/types/ReportsDTO";
-import StatCard from "./components/StatCard.tsx";
-import MiniBarChart from "./components/MiniBarChart.tsx";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
+import { useState, type ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
+const loginFormSchema = Yup.object().shape({
+    email: Yup.string()
+        .email("Invalid email address")
+        .required("Email is required"),
+    password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .required("Password is required"),
+});
 
+export default function LoginPage() {
+    const [isSigningIn, setIsSigningIn] = useState(false);
+    const [loginError, setLoginError] = useState<string | null>(null);
+    const { login } = useAuth();
+    const router = useRouter();
 
-// IDs que tu backend usa para "cerrado"
-const APPROVED_ID = 2;
-const REJECTED_ID = 3;
-
-// Map convendrá por si el backend solo manda nombres
-const CLOSED_NAMES = ["aprobado", "rechazado", "cerrado", "finalizado"];
-
-function isClosed(report: Reports): boolean {
-  // intenta por id
-  const statusId =
-    // muchos backends envían el objeto
-    (report as any)?.status?.id ??
-    // o un campo directo
-    (report as any)?.status_id ??
-    // fallback: si habían guardado como string
-    undefined;
-
-  if (statusId === APPROVED_ID || statusId === REJECTED_ID) return true;
-
-  // intenta por nombre (case-insensitive)
-  const name =
-    ((report as any)?.status?.name as string | undefined) ??
-    ((report as any)?.status_name as string | undefined) ??
-    "";
-  const norm = name.trim().toLowerCase();
-  return CLOSED_NAMES.includes(norm);
-}
-
-export default function OverviewPage() {
-  const [users, setUsers] = useState<Users[]>([]);
-  const [reports, setReports] = useState<Reports[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function fetchAll() {
-    setLoading(true);
-    setErr(null);
-    try {
-      const [u, r] = await Promise.all([getUsers(), getReports()]);
-      setUsers(u ?? []);
-      setReports(r ?? []);
-    } catch (e: any) {
-      setErr(e?.message ?? "Error al cargar datos");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => { fetchAll(); }, []);
-
-  const totals = useMemo(() => {
-    const total = reports.length;
-    const cerrados = reports.filter(isClosed).length;
-    const enCurso = Math.max(0, total - cerrados);
-    return { total, enCurso, cerrados, usuarios: users.length };
-  }, [reports, users]);
-
-  const chartData = useMemo(() => ([
-    { label: "Totales", value: totals.total },
-    { label: "En curso", value: totals.enCurso },
-    { label: "Cerrados", value: totals.cerrados },
-  ]), [totals]);
-
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard Overview</h1>
-
-      {loading && <p>Cargando...</p>}
-      {err && <p className="text-red-600">{err}</p>}
-
-      {!loading && !err && (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard title="Reportes Totales" value={totals.total} />
-            <StatCard title="Reportes en curso" value={totals.enCurso} />
-            <StatCard title="Reportes cerrados" value={totals.cerrados} />
-            <StatCard title="Usuarios" value={totals.usuarios} />
-          </div>
-
-          <MiniBarChart data={chartData} />
-        </>
-      )}
-    </div>
-  );
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+        <div className="flex flex-col border border-gray-100 shadow p-10 rounded-lg w-full max-w-md">
+            <Formik
+            initialValues={{ email: "", password: "" }}
+            validationSchema={loginFormSchema}
+            validateOnChange={true}
+            onSubmit={async (values) => {
+                setIsSigningIn(true);
+                setLoginError(null); // reset error
+                try {
+                await login(values.email, values.password);
+                router.push("/dashboard");
+                } catch (err: any) {
+                setLoginError(err.message || "Login failed");
+                } finally {
+                setIsSigningIn(false);
+                }
+            }}
+            >
+            {({ errors, touched, values, setFieldValue }) => (
+                <Form className="flex flex-col gap-4">
+                {loginError && (
+                    <div className="text-red-700 text-sm bg-red-100 p-2 rounded">
+                    {loginError}
+                    </div>
+                )}
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="email" className="text-black font-medium">Email</label>
+                    <input
+                    type="text"
+                    name="email"
+                    className={`border p-2 rounded ${errors.email && touched.email ? "border-red-500" : "border-gray-300"}`}
+                    value={values.email}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { void setFieldValue("email", e.target.value); }}
+                    />
+                    <p className="text-red-700 text-sm">{errors.email && touched.email && errors.email}</p>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <label htmlFor="password" className="text-black font-medium">Password</label>
+                    <input
+                    type="password"
+                    name="password"
+                    className={`border p-2 rounded ${errors.password && touched.password ? "border-red-500" : "border-gray-300"}`}
+                    value={values.password}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { void setFieldValue("password", e.target.value); }}
+                    />
+                    <p className="text-red-700 text-sm">{errors.password && touched.password && errors.password}</p>
+                </div>
+                <button
+                    type="submit"
+                    disabled={isSigningIn}
+                    className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                >
+                    {isSigningIn ? "Signing in..." : "Login"}
+                </button>
+                </Form>
+            )}
+            </Formik>
+        </div>
+        </div>
+    );
 }
