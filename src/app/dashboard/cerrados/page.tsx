@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Reports } from "@/types/ReportsDTO";
 import { getReports } from "@/network/ReportApi";
 
+/* ========= Tabla simple local ========= */
 const ReportsTable = ({
   reports,
   showActions = true,
@@ -30,10 +31,22 @@ const ReportsTable = ({
               <tr key={r.id}>
                 <td className="px-2 py-1">{r.id}</td>
                 <td className="px-2 py-1">{r.title ?? "—"}</td>
-                <td className="px-2 py-1">{r.status_name ?? "—"}</td>
+                <td className="px-2 py-1">
+                  {r.status_name ??
+                    (r as any)?.status?.name ??
+                    (r as any)?.status_id ??
+                    "—"}
+                </td>
                 {showActions && <td className="px-2 py-1">{/* action buttons */}</td>}
               </tr>
             ))}
+            {reports.length === 0 && (
+              <tr>
+                <td colSpan={showActions ? 4 : 3} className="px-2 py-3 text-gray-500">
+                  No hay reportes cerrados.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -41,8 +54,33 @@ const ReportsTable = ({
   );
 };
 
-const CLOSED_NAMES = ["Cerrado", "Closed", "Finalizado"];
+/* ========= Lógica de “cerrado” ========= */
+/** Ajusta estos IDs si tu backend usa otros para aprobado/rechazado/cerrado */
+const APPROVED_ID = 2;
+const REJECTED_ID = 3;
 
+/** Acepta varios nombres que podrían significar “cerrado” */
+const CLOSED_NAMES = ["aprobado", "rechazado", "cerrado", "finalizado"];
+
+/** Detecta si un reporte está cerrado por id o por nombre (case-insensitive). */
+function isClosed(r: Reports): boolean {
+  const statusId =
+    (r as any)?.status?.id ??
+    (r as any)?.status_id ??
+    undefined;
+
+  if (statusId === APPROVED_ID || statusId === REJECTED_ID) return true;
+
+  const nameRaw =
+    (r as any)?.status?.name ??
+    (r as any)?.status_name ??
+    "";
+
+  const name = String(nameRaw).trim().toLowerCase();
+  return CLOSED_NAMES.includes(name);
+}
+
+/* ========= Página ========= */
 export default function CerradosPage() {
   const [reports, setReports] = useState<Reports[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +92,7 @@ export default function CerradosPage() {
       setErr(null);
       try {
         const r = await getReports();
-        setReports(r);
+        setReports(r ?? []);
       } catch (e: any) {
         setErr(e?.message ?? "Error al cargar reportes");
       } finally {
@@ -63,10 +101,7 @@ export default function CerradosPage() {
     })();
   }, []);
 
-  const closed = useMemo(
-    () => reports.filter(r => CLOSED_NAMES.includes(r.status_name ?? "")),
-    [reports]
-  );
+  const closed = useMemo(() => reports.filter(isClosed), [reports]);
 
   return (
     <div className="space-y-6">

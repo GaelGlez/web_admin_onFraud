@@ -4,10 +4,11 @@ import { getUsers } from "@/network/UserApi";
 import { getReports } from "@/network/ReportApi";
 import { Users } from "@/types/UsersDTO";
 import { Reports } from "@/types/ReportsDTO";
+
+import { isClosed } from "@/lib/reportStatus";
+
 import StatCard from "./components/StatCard";
 import MiniBarChart from "./components/MiniBarChart";
-
-const CLOSED_NAMES = ["Cerrado", "Closed", "Finalizado"];
 
 export default function OverviewPage() {
   const [users, setUsers] = useState<Users[]>([]);
@@ -20,8 +21,8 @@ export default function OverviewPage() {
     setErr(null);
     try {
       const [u, r] = await Promise.all([getUsers(), getReports()]);
-      setUsers(u);
-      setReports(r);
+      setUsers(u ?? []);
+      setReports(r ?? []);
     } catch (e: any) {
       setErr(e?.message ?? "Error al cargar datos");
     } finally {
@@ -29,20 +30,23 @@ export default function OverviewPage() {
     }
   }
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    fetchAll();
+  }, []);
 
+  // 🔍 Usa la misma lógica que Cerrados y Seguimiento
   const totals = useMemo(() => {
     const total = reports.length;
-    const cerrados = reports.filter(r => CLOSED_NAMES.includes(r.status_name ?? "")).length;
-    const enCurso = total - cerrados;
+    const cerrados = reports.filter(isClosed).length;
+    const enCurso = Math.max(0, total - cerrados);
     return { total, enCurso, cerrados, usuarios: users.length };
   }, [reports, users]);
 
-  const chartData = [
+  const chartData = useMemo(() => ([
     { label: "Totales", value: totals.total },
     { label: "En curso", value: totals.enCurso },
     { label: "Cerrados", value: totals.cerrados },
-  ];
+  ]), [totals]);
 
   return (
     <div className="space-y-6">
