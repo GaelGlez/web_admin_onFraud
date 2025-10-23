@@ -4,8 +4,8 @@ import { getUsers } from "@/network/UserApi";
 import { getReports } from "@/network/ReportApi";
 import { Users } from "@/types/UsersDTO";
 import { Reports } from "@/types/ReportsDTO";
-import StatCard from "./components/StatCard";
-import MiniBarChart from "./components/MiniBarChart";
+import StatCard from "./components/StatCard.tsx";
+import MiniBarChart from "./components/MiniBarChart.tsx";
 
 
 
