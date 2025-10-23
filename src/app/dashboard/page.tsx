@@ -4,10 +4,32 @@ import { getUsers } from "@/network/UserApi";
 import { getReports } from "@/network/ReportApi";
 import { Users } from "@/types/UsersDTO";
 import { Reports } from "@/types/ReportsDTO";
-import { isClosed } from "@/lib/reportStatus";
 
 import StatCard from "./components/StatCard";
 import MiniBarChart from "./components/MiniBarChart";
+
+// Local, tolerant implementation to detect closed reports without relying on external module
+function isClosed(report: Reports): boolean {
+  const anyRep = report as any;
+
+  // common boolean flags
+  if (typeof anyRep.closed === "boolean") return anyRep.closed;
+  if (typeof anyRep.isClosed === "boolean") return anyRep.isClosed;
+
+  // flags that may contain timestamps (closedAt) - truthy means closed
+  if (anyRep.closedAt) return true;
+  if (anyRep.closed_at) return true;
+
+  // status-like strings
+  const status = anyRep.status ?? anyRep.state ?? anyRep.estado ?? anyRep.statusName ?? anyRep.status_name;
+  if (typeof status === "string") {
+    const s = status.toLowerCase();
+    return s.includes("cerrad") || s.includes("close");
+  }
+
+  // fallback
+  return false;
+}
 
 export default function OverviewPage() {
   const [users, setUsers] = useState<Users[]>([]);
