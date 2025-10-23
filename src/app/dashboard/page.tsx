@@ -4,7 +4,6 @@ import { getUsers } from "@/network/UserApi";
 import { getReports } from "@/network/ReportApi";
 import { Users } from "@/types/UsersDTO";
 import { Reports } from "@/types/ReportsDTO";
-
 import { isClosed } from "@/lib/reportStatus";
 
 import StatCard from "./components/StatCard";
