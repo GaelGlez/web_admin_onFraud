@@ -10,14 +10,14 @@ export default function UsersTable({ users }: { users: Users[] }) {
             <th>Email</th>
           </tr>
         </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.full_name}</td>
-              <td>{u.email}</td>
-            </tr>
-          ))}
-        </tbody>
+<tbody>
+  {users.map((u, index) => (
+    <tr key={u.id ?? `${u.email}-${index}`}>
+      <td>{u.full_name}</td>
+      <td>{u.email}</td>
+    </tr>
+  ))}
+</tbody>
       </table>
     </div>
   );
