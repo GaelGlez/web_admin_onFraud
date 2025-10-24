@@ -1,14 +1,5 @@
-// middleware.ts
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { redirect } from "next/navigation";
 
-export function middleware(req: NextRequest) {
-  if (req.nextUrl.pathname === '/') {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
-  return NextResponse.next();
+export default function Page() {
+  redirect("/login");
 }
-
-export const config = {
-  matcher: '/',
-};
