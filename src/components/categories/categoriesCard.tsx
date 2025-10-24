@@ -8,10 +8,10 @@ import NewCategoryModal from "./newCategoryModal"; // importamos modal de creaci
 import ConfirmModal from "../ui/confirmModal";
 
 interface CategoriesCardsProps {
-    categories: Categories[];
-    onCreate: (data: CategoriesDTO) => Promise<void>;
-    onUpdate: (id: number, data: CategoriesDTO) => Promise<void>;
-    onDelete: (id: number) => Promise<void>;
+    readonly categories: readonly Categories[];
+    readonly onCreate: (data: CategoriesDTO) => Promise<void>;
+    readonly onUpdate: (id: number, data: CategoriesDTO) => Promise<void>;
+    readonly onDelete: (id: number) => Promise<void>;
 }
 
 export default function CategoriesCards({ categories, onCreate, onUpdate, onDelete }: CategoriesCardsProps) {
@@ -98,10 +98,14 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
                 onConfirm={async () => {
                     if (confirmDeleteId) {
                         try {
-                        await onDelete(confirmDeleteId);
-                        setConfirmDeleteId(null);
-                        } catch (error) {
-                        alert("No se puede eliminar esta categoría porque tiene reportes asociados.");
+                            await onDelete(confirmDeleteId);
+                            setConfirmDeleteId(null);
+                        } catch (error: any) {
+                            console.error("Error al eliminar categoría:", error);
+                            alert(
+                                error?.message ||
+                                "No se puede eliminar esta categoría porque tiene reportes asociados."
+                            );
                         }
                     }
                 }}

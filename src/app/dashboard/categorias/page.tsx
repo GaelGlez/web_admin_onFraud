@@ -7,7 +7,7 @@ import CategoriesCard from "@/components/categories/categoriesCard";
 
 export default function CategoriasPage() {
     const [categories, setCategories] = useState<Categories[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const fetchCategories = async () => {
         setLoading(true);

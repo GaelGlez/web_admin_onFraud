@@ -27,11 +27,6 @@ export default function Sidebar() {
 
   const isActive = (href: string) => pathname === href;
 
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
-
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 bg-[#00623A] text-white flex flex-col justify-between p-6 shadow-xl">
       {/* ===== Header ===== */}

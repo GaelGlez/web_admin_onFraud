@@ -10,7 +10,7 @@ const SidebarComponent: any = Sidebar;
 export default function DashboardLayout({
     children,
     }: Readonly<{ children: React.ReactNode }>) {
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 

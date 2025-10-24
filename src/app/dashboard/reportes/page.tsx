@@ -57,24 +57,30 @@ export default function Page() {
     const fetchReports = useCallback(async () => {
         setLoading(true);
         try {
+            let userFilter: 'onlyAnonymous' | 'onlyUsers' | undefined;
+
+            if (selectedUser === 'anonimo') {
+                userFilter = 'onlyAnonymous';
+            } else if (selectedUser === 'autenticado') {
+                userFilter = 'onlyUsers';
+            } else {
+                userFilter = undefined;
+            }
+
             const data = await getReports({
-                statusId: statusMap[selectedStatus], // Por default pendiente
-                categoryId: selectedCategory ? parseInt(selectedCategory) : undefined,
-                userFilter:
-                    selectedUser === 'anonimo'
-                    ? 'onlyAnonymous'
-                    : selectedUser === 'autenticado'
-                    ? 'onlyUsers'
-                    : undefined,
+                statusId: statusMap[selectedStatus],
+                categoryId: selectedCategory ? Number.parseInt(selectedCategory) : undefined,
+                userFilter: userFilter,
                 keyword: searchTerm || undefined,
-                });
+            });
             setReports(data);
         } catch (err: any) {
             setError(err.message || 'Error al cargar reportes');
         } finally {
             setLoading(false);
         }
-        }, [selectedStatus, selectedCategory, selectedUser, searchTerm]);
+    }, [selectedStatus, selectedCategory, selectedUser, searchTerm]);
+
 
     // Handlers de filtros
     const handleReset = () => {

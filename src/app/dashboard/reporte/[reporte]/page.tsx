@@ -2,11 +2,10 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getReports, updateReportStatus } from "@/network/ReportApi";
+import { getReports, updateReportStatus, getEvidencesByReport, deleteReport } from "@/network/ReportApi";
 import { Reports } from "@/types/ReportsDTO";
 import { Button } from "@nextui-org/react";
 import { X, Trash  } from "lucide-react";
-import { getEvidencesByReport, deleteReport  } from "@/network/ReportApi";
 import { Evidences } from "@/types/EvidencesDTO";
 import ConfirmModal from "@/components/ui/confirmModal";
 
@@ -91,7 +90,7 @@ export default function Page() {
             setLoading(true);
             try {
                 const data = await getReports({});
-                const found = data.find((r) => r.id === parseInt(reporteId));
+                const found = data.find((r) => r.id === Number.parseInt(reporteId));
                 if (!found) throw new Error("Reporte no encontrado");
                 setReport(found);
 
