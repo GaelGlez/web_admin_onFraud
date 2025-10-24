@@ -1,19 +1,26 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&family=Roboto+Condensed:wght@400;500;600;700&display=swap');
 
 /* ================================
-   Estilos base generales
+   Variables de color global
 =================================== */
 :root {
-  --color-primary: #00623A;
-  --color-bg: #ffffff;
+  --color-primary: #00623A;  /* Verde - marca */
+  --color-danger: #C22D1A;   /* Rojo - eliminar, status rechazado */
+  --color-warning: #F3A018;  /* Amarillo - status pendiente */
+  --color-bg: #ffffff;        /* Fondo general */
+  --color-text: #1f2937;      /* Gris oscuro */
 }
 
+/* ================================
+   Reset y estilos base
+=================================== */
 html, body {
   height: 100%;
-  background-color: var(--color-bg);
-  color: #1f2937; /* gris-800 */
-  font-family: 'Inter', system-ui, sans-serif;
   margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Roboto', sans-serif;
 }
 
 a {
@@ -21,79 +28,58 @@ a {
   text-decoration: none;
   transition: color 0.15s ease, text-decoration 0.15s ease;
 }
-a:hover { text-decoration: underline; }
+a:hover {
+  text-decoration: underline;
+}
 
 /* ================================
-   Scrollbar personalizada (moderna)
+   Tipografías alternativas
 =================================== */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+.roboto-condensed { font-family: 'Roboto Condensed', sans-serif; }
+
+/* ================================
+   Scroll moderno (opcional)
+=================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 ::-webkit-scrollbar-thumb {
   background-color: var(--color-primary);
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover { background-color: #004d2d; }
-
-/* ================================
-   Inputs y formularios
-=================================== */
-input, select, textarea {
-  @apply text-gray-800 border border-gray-300 rounded-md px-3 py-2
-         focus:outline-none focus:ring-2;
-  background-color: #fff;
-  /* Tailwind ring color desde CSS var */
-  --tw-ring-color: var(--color-primary);
+::-webkit-scrollbar-thumb:hover {
+  background-color: #004d2d;
 }
 
 /* ================================
-   Botones
-=================================== */
-button {
-  @apply font-medium px-4 py-2 rounded-md transition;
+   Estilos para badges personalizados
+   =================================== */
+.badge-primary-transparent {
+  background-color: rgba(0, 98, 58, 0.2); /* verde con 20% opacity */
+  color: #000000; /* texto negro */
 }
 
-/* Primario (verde) */
-button.primary {
-  background-color: var(--color-primary);
-  color: #fff;
-}
-button.primary:hover { background-color: #004d2d; }
-
-/* Secundario (borde verde) */
-button.secondary {
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  background-color: #fff;
-}
-button.secondary:hover {
-  background-color: var(--color-primary);
-  color: #fff;
+.button-reset {
+  background-color: rgba(0, 98, 58, 0.2);
+  color: #000000;
+  border-radius: 0.4rem;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  line-height: 1;
 }
 
-/* ================================
-   Sidebar / Nav personalizada
-=================================== */
-.sidebar {
-  background-color: var(--color-primary);
-  color: #fff;
-}
-.sidebar a {
-  @apply block px-4 py-2 rounded-md transition;
-  color: #fff;
-}
-.sidebar a:hover { background-color: #004d2d; }
-.sidebar a.active {
-  background-color: #fff;
-  color: var(--color-primary);
+.button-reset:hover {
+  background-color: rgba(0, 98, 58, 0.35); /* efecto hover */
 }
 
-/* ================================
-   Tablas
-=================================== */
-table { @apply w-full text-left border-collapse; }
-thead { background-color: var(--color-primary); color: #fff; }
-th, td { @apply p-2 border-t border-gray-200; }
 
-/* ================================
-   Tarjetas / contenedores
-=================================== */
-.card { @apply bg-white border border-gray-200 rounded-lg shadow-sm p-4; }
+
+
+
+

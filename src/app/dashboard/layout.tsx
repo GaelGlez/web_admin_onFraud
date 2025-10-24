@@ -1,24 +1,36 @@
 "use client";
+
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "@/components/Sidebar";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
+export default function DashboardLayout({
+    children,
+    }: Readonly<{ children: React.ReactNode }>) {
+    const { isAuthenticated, logout } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
 
-  useEffect(() => {
-    if (!isAuthenticated) router.push("/login");
-  }, [isAuthenticated, router]);
+    // Redirigir a login si no está autenticado
+    useEffect(() => {
+        if (!isAuthenticated) {
+        router.push("/login");
+        }
+    }, [isAuthenticated, router]);
 
-  if (!isAuthenticated) return null;
+    if (!isAuthenticated) return null; // evita renderizar antes de la verificación
 
-  return (
-    <div className="min-h-screen flex bg-white">
-      <Sidebar currentPath={pathname} />
-      <main className="flex-1 p-6">{children}</main>
-    </div>
-  );
+    return (
+        <div className="flex min-h-screen bg-gray-50">
+        {/* Sidebar siempre visible */}
+        <Sidebar currentPath={pathname} />
+
+        {/* Contenido principal */}
+        <main className="flex-1 p-6">
+            {children}
+            {/* Opcional: botón de logout en el layout */}
+        </main>
+        </div>
+    );
 }

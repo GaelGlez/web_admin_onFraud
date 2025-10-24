@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Users } from "@/types/UsersDTO";
+import { Users } from "../lib/types/UsersDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
