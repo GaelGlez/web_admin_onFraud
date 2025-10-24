@@ -19,7 +19,7 @@ type AuthContextType = {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-    refreshTokenFunc: () => Promise<void>;
+    refreshTokenFunc: () => Promise<string | undefined>;
     setTokens: (tokens: Tokens) => void;
 };
 
@@ -89,20 +89,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const refreshTokenFunc = useCallback(async () => {
         if (!refreshToken) return;
         try {
-        const response = await axios.post("http://localhost:3000/auth/refresh-token", {
-            token: refreshToken,
-        });
-        if (response.status !== 200) {
-            logout();
-            return;
-        }
-        const tokens: Tokens = response.data as Tokens;
-        setTokens(tokens);
+            const response = await axios.post<{ access_token?: string }>("http://localhost:4000/auth/refresh-token", {
+                token: refreshToken,
+            });
+
+            if (response.status === 200 && response.data?.access_token) {
+                const newAccessToken = response.data.access_token;
+                localStorage.setItem("accessToken", newAccessToken);
+                setAccessToken(newAccessToken);
+                return newAccessToken;
+            } else {
+                logout();
+            }
         } catch (error) {
-        console.error(error);
-        clearTokens();
+            console.error("Error al refrescar token:", error);
+            logout();
         }
-    }, [refreshToken, clearTokens]);
+    }, [refreshToken, logout]);
+
+    
     const value = useMemo<AuthContextType>(
         () => ({
         accessToken,

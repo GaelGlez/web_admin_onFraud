@@ -14,3 +14,16 @@ export interface Reports {
     category_name?: string;
     status_name?: string;
 }
+
+
+export interface ReportStats {
+    pending: number;
+    approved: number;
+    rejected: number;
+    total: number;
+}
+
+export interface ReportsByCategory {
+    category: string;
+    count: number;
+}
