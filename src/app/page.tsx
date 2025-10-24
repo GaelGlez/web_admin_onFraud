@@ -1,7 +1,14 @@
-// app/page.tsx
-import { redirect } from "next/navigation";
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export default function HomePage() {
-  redirect("/login");
-  return null; // nunca se renderiza nada
+export function middleware(req: NextRequest) {
+  if (req.nextUrl.pathname === '/') {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+  return NextResponse.next();
 }
+
+export const config = {
+  matcher: '/',
+};
