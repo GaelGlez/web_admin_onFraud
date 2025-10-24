@@ -149,7 +149,7 @@ export default function Page() {
                     title="Status"
                     options={statusOptions}
                     onChange={handleStatusChange}
-                    canSearch={false} // opcional: si quieres barra de búsqueda en el select
+                    canSearch={false}
                 />
                 <Select
                     value={selectedUser}

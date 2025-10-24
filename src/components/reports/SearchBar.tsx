@@ -3,15 +3,16 @@ import { Search } from "lucide-react";
 
 interface SearchBarProps {
     searchTerm?: string;
+    placeholder?: string;
     onSearch: (term: string) => void;
 }
 
-export default function SearchBar({ searchTerm, onSearch }: SearchBarProps) {
+export default function SearchBar({ searchTerm, placeholder, onSearch }: SearchBarProps) {
     return (
         <div className="search-bar-container">
         <Input
             radius="lg"
-            placeholder="Buscar por titulo o descripción..."
+            placeholder={placeholder || "Buscar por titulo o descripción..."}
             value={searchTerm}
             onChange={(e) => onSearch(e.target.value)}
             startContent={

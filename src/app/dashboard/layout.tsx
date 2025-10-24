@@ -5,6 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 
+const SidebarComponent: any = Sidebar;
+
 export default function DashboardLayout({
     children,
     }: Readonly<{ children: React.ReactNode }>) {
@@ -24,7 +26,7 @@ export default function DashboardLayout({
     return (
         <div className="flex min-h-screen bg-gray-50">
         {/* Sidebar siempre visible */}
-        <Sidebar currentPath={pathname} />
+        <SidebarComponent currentPath={pathname} />
 
         {/* Contenido principal */}
         <main className="flex-1 p-6">

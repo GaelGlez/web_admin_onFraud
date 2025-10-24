@@ -4,14 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Image from "next/image";
 import ConfirmModal from "@/components/ui/confirmModal";
-
 import {
-  LayoutDashboard,
-  User,
-  FileSearch,
-  LogOut,
-  ShieldCheck,
-} from "lucide-react";
+  LayoutDashboard, User, Users, FileSearch, LogOut, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
 export default function Sidebar() {
@@ -26,6 +20,8 @@ export default function Sidebar() {
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/reportes", label: "Reportes", icon: FileSearch },
+    { href: "/dashboard/usuarios", label: "Usuarios", icon: Users },
+    { href: "/dashboard/categorias", label: "Categorías", icon: ShieldCheck },
     { href: "/dashboard/perfil", label: "Perfil", icon: User },
   ];
 
@@ -114,7 +110,7 @@ export default function Sidebar() {
         />
 
         <p className="text-xs text-white/60 mt-4">
-          © {new Date().getFullYear()} <span className="font-semibold">onFraud</span>. Todos los derechos reservados.
+          ©<span className="font-semibold">onFraud</span>. Todos los derechos reservados.
         </p>
       </div>
     </aside>
