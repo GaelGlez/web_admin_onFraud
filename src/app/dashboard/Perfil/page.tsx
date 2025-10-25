@@ -52,15 +52,21 @@ export default function PerfilPage() {
   }, [fullName, email, profile]);
 
   // Detectar cambios en contraseña
-  const isPasswordDirty = useMemo(() => oldPassword && newPassword, [oldPassword, newPassword]);
+  const isPasswordDirty = useMemo(
+    () => oldPassword && newPassword && oldPassword !== newPassword,
+    [oldPassword, newPassword]
+  );
+
 
   // Guardar cambios de usuario
   const handleSaveUser = async () => {
     setUserError("");
+
     if (!fullName.trim() || !email.trim()) {
       setUserError("Nombre y correo son obligatorios");
       return;
     }
+    
     setLoadingUser(true);
     try {
       const updateData: UpdateUserDTO = { full_name: fullName, email };
@@ -77,10 +83,22 @@ export default function PerfilPage() {
   const handleChangePassword = async () => {
     setPassError("");
     setPasswordSuccess(false);
+
     if (!oldPassword || !newPassword) {
       setPassError("Ambos campos son obligatorios");
       return;
     }
+
+    if (oldPassword === newPassword) {
+      setPassError("La nueva contraseña no puede ser igual a la actual");
+      return;
+    }
+
+    if (newPassword.length < 9) {
+      setPassError("La nueva contraseña debe tener al menos 9 caracteres");
+      return;
+    }
+
     setLoadingPass(true);
     try {
       await updatePassword({ oldPassword, newPassword } as UpdatePasswordDTO);
@@ -88,11 +106,13 @@ export default function PerfilPage() {
       setNewPassword("");
       setPasswordSuccess(true);
     } catch (err: any) {
-      setPassError(err.response?.data?.error || "Error al cambiar contraseña");
+      // Mostramos el mensaje de error que lanzamos en ProfileApi
+      setPassError(err.message || "Error al cambiar contraseña");
     } finally {
       setLoadingPass(false);
     }
   };
+
 
   if (loadingProfile) return <p>Cargando perfil...</p>;
 

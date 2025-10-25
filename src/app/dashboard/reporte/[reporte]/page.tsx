@@ -178,7 +178,7 @@ export default function Page() {
                         </div>
                     )}
 
-                    {/* Modal de imagen */}
+                    {/* Modal de imagens */}
                     {selectedImage && (
                         <div className="fixed inset-0 z-50 flex justify-center items-center">
                             <div className="absolute inset-0 backdrop-blur-sm bg-black/10" onClick={() => setSelectedImage(null)} />

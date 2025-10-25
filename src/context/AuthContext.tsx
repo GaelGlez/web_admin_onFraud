@@ -87,25 +87,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [clearTokens]);
 
     const refreshTokenFunc = useCallback(async () => {
-        if (!refreshToken) return;
+        if (!refreshToken) return undefined;
         try {
-            const response = await axios.post<{ access_token?: string }>("http://localhost:4000/auth/refresh-token", {
-                token: refreshToken,
-            });
+            const response = await axios.post<{ access_token?: string }>(
+            "http://localhost:4000/auth/refresh-token",
+            { token: refreshToken }
+            );
 
             if (response.status === 200 && response.data?.access_token) {
-                const newAccessToken = response.data.access_token;
-                localStorage.setItem("accessToken", newAccessToken);
-                setAccessToken(newAccessToken);
-                return newAccessToken;
+            const newAccessToken = response.data.access_token;
+            localStorage.setItem("accessToken", newAccessToken);
+            setAccessToken(newAccessToken);
+            return newAccessToken;
             } else {
-                logout();
+            logout();
+            return undefined;
             }
         } catch (error) {
             console.error("Error al refrescar token:", error);
             logout();
+            return undefined;
         }
     }, [refreshToken, logout]);
+
 
     
     const value = useMemo<AuthContextType>(

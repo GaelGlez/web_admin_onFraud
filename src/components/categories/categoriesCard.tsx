@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Categories, CategoriesDTO } from "@/types/CategoriesDTO";
 import { Button } from "@nextui-org/react";
 import EditCategoryModal from "./editCategoryModal";
-import NewCategoryModal from "./newCategoryModal"; // importamos modal de creación
+import NewCategoryModal from "./newCategoryModal";
 import ConfirmModal from "../ui/confirmModal";
 
 interface CategoriesCardsProps {
@@ -18,6 +18,7 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
     const [selectedCategory, setSelectedCategory] = useState<Categories | null>(null);
     const [isNewModalOpen, setIsNewModalOpen] = useState(false); // nuevo modal
     const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
@@ -33,6 +34,13 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
                 </Button>
             </div>
 
+            {/* Mostrar mensaje de error del backend */}
+            {errorMessage && (
+                <div className="mb-4 p-3 rounded-md bg-red-100 text-red-700 font-semibold">
+                    {errorMessage}
+                </div>
+            )}
+
             {/* Grid de cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {categories.length > 0 ? (
@@ -44,6 +52,11 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
                             <div>
                                 <p className="text-gray-400 text-sm">ID: #{c.id}</p>
                                 <h3 className="text-gray-800 font-semibold text-lg mt-1">{c.name}</h3>
+                                {c.reportCount > 0 && (
+                                    <p className="text-red-600 text-sm mt-1">
+                                        ⚠ {c.reportCount} reporte(s) asociado(s)
+                                    </p>
+                                )}
                             </div>
                             <div className="flex justify-end gap-2 mt-4">
                                 <Button
@@ -55,8 +68,13 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
                                 </Button>
                                 <Button
                                     size="sm"
-                                    className="bg-[color:var(--color-danger)] text-white font-bold px-3 py-1.5 rounded-md hover:bg-[#a62214] transition-all"
+                                    className={`bg-[color:var(--color-danger)] text-white font-bold px-3 py-1.5 rounded-md transition-all ${
+                                        c.reportCount > 0
+                                            ? "bg-red-200 text-gray-400 cursor-not-allowed"
+                                            : "hover:bg-[#a62214]"
+                                    }`}
                                     onPress={() => setConfirmDeleteId(c.id)}
+                                    isDisabled={c.reportCount > 0} // <-- deshabilitado si hay reportes
                                 >
                                     Eliminar
                                 </Button>
@@ -97,14 +115,16 @@ export default function CategoriesCards({ categories, onCreate, onUpdate, onDele
                 onClose={() => setConfirmDeleteId(null)}
                 onConfirm={async () => {
                     if (confirmDeleteId) {
+                        setErrorMessage(""); // limpiar mensaje previo
                         try {
                             await onDelete(confirmDeleteId);
                             setConfirmDeleteId(null);
                         } catch (error: any) {
                             console.error("Error al eliminar categoría:", error);
-                            alert(
-                                error?.message ||
-                                "No se puede eliminar esta categoría porque tiene reportes asociados."
+                            // Mostrar mensaje del backend en el componente
+                            const backendMessage = error.response?.data?.message || error.response?.data?.error;
+                            setErrorMessage(
+                                backendMessage || "No se puede eliminar esta categoría porque tiene reportes asociados."
                             );
                         }
                     }
