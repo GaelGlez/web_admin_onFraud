@@ -138,7 +138,6 @@ export default function Page() {
                                 {report.status_name}
                             </span>
                         </span>
-                        <span><span className="font-bold text-[color:var(--color-primary)]">Título:</span> {report.title}</span>
                         <span><span className="font-bold text-[color:var(--color-primary)]">Creación:</span> {new Date(report.created_at).toLocaleDateString("es-MX", { day: "2-digit", month: "long", year: "numeric" })}</span>
                         <span><span className="font-bold text-[color:var(--color-primary)]">Categoría:</span> {report.category_name}</span>
                         {report.url && (
